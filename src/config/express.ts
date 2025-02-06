@@ -1,12 +1,17 @@
-import helmet from "helmet";
-import cors from "cors";
-import rateLimit from "express-rate-limit";
 import compression from "compression";
-import {env} from "../env";
+import cors from "cors";
+import { Application, json, Request, Response, urlencoded } from "express";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 
-import { Application, json, urlencoded, Request, Response } from 'express';
+import { env } from "../env";
 
-const {app: appInfo} = env;
+import { mongoDBLoader } from "./mongodb";
+import { postgresLoader } from "./postgres";
+import { redisLoader } from "./redis";
+
+
+const { app: appInfo } = env;
 
 const corsOptions = {
     origin(origin, callback) {
@@ -21,11 +26,11 @@ const limiter = rateLimit({
 });
 
 
-const expressConfig = (app: Application): void => {
+const expressConfig = async (app: Application): Promise<void> => {
     app.use(cors(corsOptions));
     app.use(limiter);
     app.use(compression());
-    app.use(urlencoded({extended: true}));
+    app.use(urlencoded({ extended: true }));
     app.use(json());
     
     app.use(helmet());
@@ -36,7 +41,11 @@ const expressConfig = (app: Application): void => {
         }
     }));
 
+    await postgresLoader();
+    await mongoDBLoader();
+    await redisLoader();
+
     app.get("/", (req:Request, res:Response) => res.send(`${appInfo.displayName} - v${appInfo.version}`));
-}
+};
 
 export default expressConfig;
