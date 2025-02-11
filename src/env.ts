@@ -6,6 +6,7 @@ import * as pkg from "../package.json";
 
 import {
     getOsEnv,
+    getOsEnvWithDefault,
     normalizePort
 } from "./lib/env";
 
@@ -31,6 +32,9 @@ export const env = {
         displayName: (pkg as any).displayName,
         version: (pkg as any).version,
         port: normalizePort(process.env.PORT || undefined)
+    },
+    log: {
+        level: getOsEnvWithDefault("LOG_LEVEL", "debug"),
     },
     db: {
         mongo: {
