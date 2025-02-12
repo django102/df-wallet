@@ -40,6 +40,9 @@ export default class User {
     @Index()
         tier?: number;
 
+    @Column()
+        pin?: string;
+
     @Column({ default: false })
     @Index()
         isValidated?: boolean;
