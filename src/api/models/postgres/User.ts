@@ -52,6 +52,10 @@ export default class User {
     @Index()
         isEnabled?: boolean;
 
+    @Column({ default: false })
+    @Index()
+        isDeleted?: boolean;
+
     @CreateDateColumn()
     @Index()
         createdAt?: string;
