@@ -1,7 +1,7 @@
 {
   "name": "df-wallet",
   "displayName": "Developer's Foundry Mini Wallet",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Developer's Foundry Wallet System",
   "main": "src/app.ts",
   "repository": "https://github.com/django102/df-wallet.git",
