@@ -40,7 +40,7 @@ export default class User {
     @Index()
         tier?: number;
 
-    @Column()
+    @Column({ nullable: true })
         pin?: string;
 
     @Column({ default: false })
@@ -72,12 +72,4 @@ export default class User {
 
     @ManyToOne(() => StateLGA, (stateLga) => stateLga.id)
         stateLga?: StateLGA;
-
-    // @OneToOne(() => UserNextOfKin)
-    // @JoinColumn()
-    //     nextOfKin?: UserNextOfKin;
-
-    // @OneToOne(() => UserKYCInfomation)
-    // @JoinColumn()
-    //     kyc?: UserKYCInfomation;
 }

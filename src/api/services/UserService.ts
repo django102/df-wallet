@@ -1,11 +1,15 @@
 import { Service } from "typedi";
 
 import { Logger } from "../../lib/logger";
+import AddWithdrawalInformationRequest from "../models/payload/requests/AddWithdrawalInformationRequest";
 import AuthenticateUserOtp from "../models/payload/requests/AuthenticateUserOtp";
 import AuthenticateUserRequest from "../models/payload/requests/AuthenticateUserRequest";
 import CreateUserRequest from "../models/payload/requests/CreateUserRequest";
+import UpdateUserRequest from "../models/payload/requests/UpdateUserRequest";
 import User from "../models/postgres/User";
+import UserWithdrawalInformation from "../models/postgres/UserWithdrawalInformation";
 import { UserRepository } from "../repositories/UserRepository";
+import { UserWithdrawalInformationRepository } from "../repositories/UserWithdrawalInformationRepository";
 
 import UtilityService from "./UtilityService";
 
@@ -105,10 +109,30 @@ export default class UserService {
         return true;
     }
 
-    public async listUsers(): Promise<User[]> {
-        const allUsers = await UserRepository.list();
+    public async update(req: UpdateUserRequest): Promise<{isSuccess: boolean, message?: string, user?: User}> {
+        const { id } = req;
 
-        const users = allUsers.map((user) => UtilityService.sanitizeUserObject(user));
-        return users;
+        const existingUser = await UserRepository.findById(id);
+        if(!existingUser) {
+            return { isSuccess: false, message: "User doesn't exist!" };
+        }
+
+        const updatedUser = await UserRepository.updateById(id, { ...req });
+        const user = UtilityService.sanitizeUserObject(updatedUser);
+    
+        return { isSuccess: true, user };
+    }
+
+    public async addWithdrawalAccount(req: AddWithdrawalInformationRequest): Promise<UserWithdrawalInformation> {
+        const withdrawalInformation = await UserWithdrawalInformationRepository.add(req);
+        return withdrawalInformation;
+    }
+
+    public async updateWithdrawalAccount(id: number, req: AddWithdrawalInformationRequest) {
+        await UserWithdrawalInformationRepository.updateUserAccount(id, req);
+    }
+
+    public async deleteWithdrawalAccount(id: number) {
+        await UserWithdrawalInformationRepository.deleteUserWithdrawalAccount(id);
     }
 }
